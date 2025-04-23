@@ -42,7 +42,7 @@ const editTask = async (todo) => {
 };
 
 const addTask = async () => {
-  console.log("Adding todo:", todoTitle);
+  console.log("Adding todo:", inputValue.value);
 
   // Clear the input field after adding the todo
   inputValue.value = "";
