@@ -1,25 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import axios from "axios";
+import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 const inputValue = ref("");
-const todos = ref([
-  {
-    id: 1,
-    title: "Learn Vue.js",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Build a Todo App",
-    completed: true,
-  },
-  {
-    id: 3,
-    title: "Deploy to Production",
-    completed: false,
-  },
-]);
+const todos = ref([]);
 
 const editTask = async (todo) => {
   const { value: newTitle } = await Swal.fire({
@@ -37,16 +23,86 @@ const editTask = async (todo) => {
   });
 
   if (newTitle) {
-    todo.title = newTitle;
+    try {
+      const { data } = await axios.put(`${apiUrl}/${todo._id}`, {
+        ...todo,
+        title: newTitle,
+      });
+      const index = todos.value.findIndex((t) => t._id === todo._id);
+      todos.value[index] = data;
+    } catch (err) {
+      console.error("Error updating todo:", err);
+    }
+    Swal.fire({
+      title: "Task updated successfully!",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  }
+};
+
+const toggleTask = async (todo) => {
+  try {
+    const { data } = await axios.put(`${apiUrl}/${todo._id}`, {
+      ...todo,
+      completed: !todo.completed,
+    });
+    const index = todos.value.findIndex((t) => t._id === todo._id);
+    todos.value[index] = data;
+  } catch (err) {
+    console.error("Error toggling todo:", err);
   }
 };
 
 const addTask = async () => {
-  console.log("Adding todo:", inputValue.value);
+  try {
+    const { data } = await axios.post(`${apiUrl}`, {
+      title: inputValue.value,
+      completed: false,
+    });
+    todos.value.push(data);
+  } catch (err) {
+    console.error("Error adding todo:", err);
+  }
 
-  // Clear the input field after adding the todo
   inputValue.value = "";
 };
+
+const deleteTask = async (todo) => {
+  try {
+    await axios.delete(`${apiUrl}/${todo._id}`);
+    todos.value = todos.value.filter((t) => t._id !== todo._id);
+  } catch (err) {
+    console.error("Error deleting todo:", err);
+  }
+};
+
+const deleteTaskConfirmation = (todo) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deleteTask(todo);
+      Swal.fire("Deleted!", "Your task has been deleted.", "success");
+    }
+  });
+};
+
+onMounted(async () => {
+  try {
+    const res = await axios.get(`${apiUrl}`);
+    todos.value = res.data;
+  } catch (err) {
+    console.error("Error fetching todos:", err);
+  }
+});
 </script>
 
 <template>
@@ -70,7 +126,7 @@ const addTask = async () => {
         <button
           class="btn btn-link text-white no-underline"
           :class="{ 'line-through': todo.completed }"
-          @click="todo.completed = !todo.completed"
+          @click="toggleTask(todo)"
         >
           {{ todo.title }}
         </button>
@@ -89,7 +145,10 @@ const addTask = async () => {
             </svg>
           </button>
           <!-- Delete button -->
-          <button class="btn btn-ghost p-1">
+          <button
+            class="btn btn-ghost p-1"
+            @click="deleteTaskConfirmation(todo)"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 448 512"
