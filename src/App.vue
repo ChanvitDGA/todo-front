@@ -25,7 +25,7 @@ const editTask = async (todo) => {
   const { value: newTitle } = await Swal.fire({
     title: "Edit your task",
     input: "text",
-    inputValue: todo.title,
+    inputValue: "",
     showCancelButton: true,
     confirmButtonText: "Update Task",
     cancelButtonText: "Cancel",
@@ -76,7 +76,7 @@ const addTask = async () => {
         </button>
         <div class="flex gap-x-2">
           <!-- Edit button -->
-          <button @click="editTask" class="btn btn-ghost p-1">
+          <button @click="editTask(todo)" class="btn btn-ghost p-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
