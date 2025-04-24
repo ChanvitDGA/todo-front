@@ -12,8 +12,5 @@ FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# ลบ default.conf และใส่ config ที่ redirect ทุก path ไป index.html (กรณี SPA)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
