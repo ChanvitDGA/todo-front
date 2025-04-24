@@ -3,7 +3,7 @@ import axios from "axios";
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 
-const apiUrl = "http://todo-api.todo";
+const apiUrl = "todo-api.todo:3000/todos";
 const inputValue = ref("");
 const todos = ref([]);
 
