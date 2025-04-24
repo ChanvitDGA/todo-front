@@ -3,7 +3,7 @@ import axios from "axios";
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 
-const apiUrl = import.meta.env.VITE_APP_API_URL;
+const apiUrl = import.meta.env;
 const inputValue = ref("");
 const todos = ref([]);
 
