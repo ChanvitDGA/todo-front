@@ -97,6 +97,7 @@ const deleteTaskConfirmation = (todo) => {
 
 onMounted(async () => {
   try {
+    console.log(apiUrl);
     const res = await axios.get(`${apiUrl}`);
     todos.value = res.data;
   } catch (err) {
