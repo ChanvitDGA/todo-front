@@ -3,7 +3,7 @@ import axios from "axios";
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 
-const apiUrl = "http://localhost:3000/todos";
+const apiUrl = import.meta.env.VITE_APP_API_URL;
 const inputValue = ref("");
 const todos = ref([]);
 
@@ -97,6 +97,7 @@ const deleteTaskConfirmation = (todo) => {
 
 onMounted(async () => {
   try {
+    console.log(apiUrl);
     const res = await axios.get(`${apiUrl}`);
     todos.value = res.data;
   } catch (err) {
