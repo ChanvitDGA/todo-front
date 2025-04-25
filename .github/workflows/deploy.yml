@@ -34,3 +34,10 @@ jobs:
         run: |
           IMAGE_URI=779846795588.dkr.ecr.ap-southeast-1.amazonaws.com/todo-front
           docker push $IMAGE_URI:latest
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster todo \
+            --service todo-front-service-nz27h57g \
+            --force-new-deployment
